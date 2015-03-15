@@ -7,15 +7,17 @@ void bl_init(void) {
     TRISCbits.TRISC3 = 1;
     TRISCbits.TRISC4 = 1;
     TRISCbits.TRISC5 = 0;
+    CCP1CON |= 0x0C;
+    PSTRCONbits.STRA = 0;
     bl_disable();
 }
 
 void bl_enable(void) {
-    CCPR1L = backlight_level;
+    LATCbits.LATC5 = 1;
 }
 
 void bl_disable(void) {
-    CCPR1L = 0;
+    LATCbits.LATC5 = 0;
 }
 
 void bl_level(unsigned char level) {
