@@ -3,3 +3,4 @@ debug/
 dist/
 *.obj
 funclist
+nbproject/private/
