@@ -168,8 +168,8 @@ struct buffer_descriptor {
 
 #elif _PIC18
 
-#define NEEDS_PULL /* Whether to pull up D+/D- with SFR_PULL_EN. */
-#define HAS_LOW_SPEED
+//#define NEEDS_PULL /* Whether to pull up D+/D- with SFR_PULL_EN. */
+//#define HAS_LOW_SPEED
 
 #ifdef _18F46J50
 #define HAS_ON_CHIP_XCVR_DIS

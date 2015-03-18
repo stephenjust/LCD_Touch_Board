@@ -14,6 +14,8 @@
         <itemPath>usb/src/usb_hal.h</itemPath>
       </logicalFolder>
       <itemPath>backlight.h</itemPath>
+      <itemPath>touchpanel.h</itemPath>
+      <itemPath>i2c.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -33,6 +35,8 @@
       <itemPath>backlight.c</itemPath>
       <itemPath>config.c</itemPath>
       <itemPath>usb_callbacks.c</itemPath>
+      <itemPath>touchpanel.c</itemPath>
+      <itemPath>i2c.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
