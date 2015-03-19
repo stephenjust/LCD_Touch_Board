@@ -16,7 +16,7 @@ typedef union {
     unsigned char raw[31];
     struct {
         unsigned :4;
-        unsigned char DEVICE_MODE :3;
+        unsigned DEVICE_MODE :3;
         unsigned :1;
         unsigned char GEST_ID;
         union {
@@ -24,7 +24,7 @@ typedef union {
                 unsigned char TD_STATUS;
             };
             struct {
-                unsigned char TOUCH_POINTS :3;
+                unsigned TOUCH_POINTS :3;
             };
         };
         unsigned char TOUCH1_XH;

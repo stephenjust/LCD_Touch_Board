@@ -5,49 +5,111 @@
  * Created on March 14, 2015, 10:39 PM
  */
 
-#define _XTAL_FREQ 1000000
-
 #include <xc.h>
 #include "backlight.h"
 #include "touchpanel.h"
-#include "usb.h"
+#include "usb/usb.h"
+#include "usb/usb_device_hid.h"
+
+#include <app_device_hid_digitizer_multi.h>
+#define _XTAL_FREQ 48000000
 
 void interrupt_init(void);
 
 int main()
 {
-    tp_init();
-    interrupt_init();
-    usb_init();
     bl_init();
+    tp_init();
+    SYSTEM_Initialize(SYSTEM_STATE_USB_START);
+
+    USBDeviceInit();
+    USBDeviceAttach();
 
     tp_enable();
+
     //bl_enable();
     while(1)
     {
-    }
-return 0;
+        SYSTEM_Tasks();
+
+        /* If the USB device isn't configured yet, we can't really do anything
+         * else since we don't have a host to talk to.  So jump back to the
+         * top of the while loop. */
+        if( USBGetDeviceState() < CONFIGURED_STATE )
+        {
+            /* Jump back to the top of the while loop. */
+            continue;
+        }
+
+        /* If we are currently suspended, then we need to see if we need to
+         * issue a remote wakeup.  In either case, we shouldn't process any
+         * keyboard commands since we aren't currently communicating to the host
+         * thus just continue back to the start of the while loop. */
+        if( USBIsDeviceSuspended()== true )
+        {
+            /* Jump back to the top of the while loop. */
+            continue;
+        }
+
+        //Application specific tasks
+        APP_DeviceHIDDigitizerTasks();
+    }//end while
+
+    return 0;
 }
 
-void interrupt_init(void) {
-    INTCONbits.PEIE = 1;
-    INTCONbits.GIE = 1;
+bool USER_USB_CALLBACK_EVENT_HANDLER(USB_EVENT event, void *pdata, uint16_t size)
+{
+    switch( (int) event )
+    {
+        case EVENT_TRANSFER:
+            break;
 
-    // Set up touch-panel interrupt
-    TRISCbits.TRISC1 = 1; // Set pin C1 as input
-    ANSELbits.ANS5 = 0; // Disable ADC on C1
-    INTCON2bits.INTEDG1 = 0; // Falling edge triggered interrupt on C1
-    INTCON3bits.INT1IE = 1; // Enable interrupt on pin C1
+        case EVENT_SOF:
+            APP_DeviceHIDDigitizerSOFHandler();
+            break;
+
+        case EVENT_SUSPEND:
+            break;
+
+        case EVENT_RESUME:
+            break;
+
+        case EVENT_CONFIGURED:
+            /* When the device is configured, we can (re)initialize the
+             * demo code. */
+            APP_DeviceHIDDigitizerInitialize();
+            break;
+
+        case EVENT_SET_DESCRIPTOR:
+            break;
+
+        case EVENT_EP0_REQUEST:
+            /* We have received a non-standard USB request.  The HID driver
+             * needs to check to see if the request was for it. */
+            USBCheckHIDRequest();
+            break;
+
+        case EVENT_BUS_ERROR:
+            break;
+
+        case EVENT_TRANSFER_TERMINATED:
+            break;
+
+        default:
+            break;
+    }
+    return true;
 }
 
 void interrupt high_priority isr() {
+    LATCbits.LATC3 = 1;
     // Check all USB interrupts
-    if (UIR || PIR2bits.USBIF) {
-        usb_service();
-    }
+    USBDeviceTasks();
 
     // Check touch panel interrupt
     if (INTCON3bits.INT1IF) {
         tp_service();
     }
+    LATCbits.LATC3 = 0;
 }

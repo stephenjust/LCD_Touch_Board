@@ -4,18 +4,31 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <logicalFolder name="f1" displayName="usb" projectFiles="true">
-        <itemPath>usb/include/usb.h</itemPath>
-        <itemPath>usb/include/usb_cdc.h</itemPath>
-        <itemPath>usb/include/usb_ch9.h</itemPath>
-        <itemPath>usb/include/usb_hid.h</itemPath>
-        <itemPath>usb/include/usb_microsoft.h</itemPath>
-        <itemPath>usb/include/usb_config.h</itemPath>
-        <itemPath>usb/src/usb_hal.h</itemPath>
+      <logicalFolder name="usb" displayName="usb" projectFiles="true">
+        <logicalFolder name="src" displayName="src" projectFiles="true">
+          <itemPath>usb/src/usb_device_local.h</itemPath>
+          <itemPath>usb/src/usb_hal_local.h</itemPath>
+          <itemPath>usb/src/usb_pic18_local.h</itemPath>
+        </logicalFolder>
+        <itemPath>usb/usb_device.h</itemPath>
+        <itemPath>usb/usb_hid.h</itemPath>
+        <itemPath>usb/usb.h</itemPath>
+        <itemPath>usb/usb_ch9.h</itemPath>
+        <itemPath>usb/usb_common.h</itemPath>
+        <itemPath>usb/usb_device_generic.h</itemPath>
+        <itemPath>usb/usb_device_hid.h</itemPath>
+        <itemPath>usb/usb_hal.h</itemPath>
+        <itemPath>usb/usb_hal_pic18.h</itemPath>
+        <itemPath>usb/usb_struct_queue.h</itemPath>
       </logicalFolder>
       <itemPath>backlight.h</itemPath>
       <itemPath>touchpanel.h</itemPath>
       <itemPath>i2c.h</itemPath>
+      <itemPath>fixed_address_memory.h</itemPath>
+      <itemPath>system.h</itemPath>
+      <itemPath>system_config.h</itemPath>
+      <itemPath>usb_config.h</itemPath>
+      <itemPath>app_device_hid_digitizer_multi.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -24,19 +37,20 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <logicalFolder name="f1" displayName="usb" projectFiles="true">
-        <itemPath>usb/src/usb.c</itemPath>
-        <itemPath>usb/src/usb_cdc.c</itemPath>
-        <itemPath>usb/src/usb_hid.c</itemPath>
-        <itemPath>usb/src/usb_winusb.c</itemPath>
-        <itemPath>usb/src/usb_descriptors.c</itemPath>
+      <logicalFolder name="usb" displayName="usb" projectFiles="true">
+        <logicalFolder name="src" displayName="src" projectFiles="true">
+          <itemPath>usb/src/usb_device.c</itemPath>
+          <itemPath>usb/src/usb_device_generic.c</itemPath>
+          <itemPath>usb/src/usb_device_hid.c</itemPath>
+        </logicalFolder>
       </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>backlight.c</itemPath>
-      <itemPath>config.c</itemPath>
-      <itemPath>usb_callbacks.c</itemPath>
       <itemPath>touchpanel.c</itemPath>
       <itemPath>i2c.c</itemPath>
+      <itemPath>system.c</itemPath>
+      <itemPath>app_device_hid_digitizer_multi.c</itemPath>
+      <itemPath>usb_descriptors.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -45,8 +59,7 @@
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
-    <Elem>usb/src</Elem>
-    <Elem>usb/include</Elem>
+    <Elem>usb</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -86,7 +99,7 @@
       <HI-TECH-COMP>
         <property key="asmlist" value="true"/>
         <property key="define-macros" value=""/>
-        <property key="extra-include-directories" value="usb/include"/>
+        <property key="extra-include-directories" value="."/>
         <property key="identifier-length" value="255"/>
         <property key="operation-mode" value="free"/>
         <property key="opt-xc8-compiler-strict_ansi" value="false"/>
@@ -154,7 +167,6 @@
         <property key="ToolFirmwareFilePath"
                   value="Press to browse for a specific firmware version"/>
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
