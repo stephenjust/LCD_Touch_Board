@@ -18,14 +18,15 @@ void interrupt_init(void);
 
 int main()
 {
-    bl_init();
-    tp_init();
     SYSTEM_Initialize(SYSTEM_STATE_USB_START);
 
     USBDeviceInit();
     USBDeviceAttach();
+    
+    bl_init();
+    tp_init();
 
-    tp_enable();
+    //tp_enable();
 
     //bl_enable();
     while(1)
