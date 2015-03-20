@@ -59,6 +59,8 @@ typedef union {
 } touch_data;
 
 void tp_service(void);
+int tp_waiting(void);
+void tp_clear_waiting(void);
 void tp_init(void);
 void tp_enable(void);
 void tp_disable(void);

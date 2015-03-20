@@ -22,17 +22,15 @@ int main()
 
     USBDeviceInit();
     USBDeviceAttach();
-    
+
     bl_init();
     tp_init();
 
-    //tp_enable();
+    tp_enable();
 
     //bl_enable();
     while(1)
     {
-        SYSTEM_Tasks();
-
         /* If the USB device isn't configured yet, we can't really do anything
          * else since we don't have a host to talk to.  So jump back to the
          * top of the while loop. */
@@ -41,7 +39,6 @@ int main()
             /* Jump back to the top of the while loop. */
             continue;
         }
-
         /* If we are currently suspended, then we need to see if we need to
          * issue a remote wakeup.  In either case, we shouldn't process any
          * keyboard commands since we aren't currently communicating to the host
@@ -51,7 +48,6 @@ int main()
             /* Jump back to the top of the while loop. */
             continue;
         }
-
         //Application specific tasks
         APP_DeviceHIDDigitizerTasks();
     }//end while
@@ -104,13 +100,9 @@ bool USER_USB_CALLBACK_EVENT_HANDLER(USB_EVENT event, void *pdata, uint16_t size
 }
 
 void interrupt high_priority isr() {
-    LATCbits.LATC3 = 1;
     // Check all USB interrupts
     USBDeviceTasks();
 
     // Check touch panel interrupt
-    if (INTCON3bits.INT1IF) {
-        tp_service();
-    }
-    LATCbits.LATC3 = 0;
+    tp_service();
 }

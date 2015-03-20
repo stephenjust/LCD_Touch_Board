@@ -8,15 +8,24 @@
 
 static unsigned char hid_report_in[HID_INT_IN_EP_SIZE] DEVICE_HID_DIGITIZER_IN_BUFFER_ADDRESS;
 static touch_data tp_data;
+static volatile int tp_wait = 0;
 
 void tp_service(void) {
+    if (!INTCON3bits.INT1F) return;
     INTCON3bits.INT1E = 0;
     INTCON3bits.INT1F = 0;
 
-    tp_read();
-    tp_send();
+    tp_wait = 1;
 
     INTCON3bits.INT1E = 1;
+}
+
+int tp_waiting(void) {
+    return tp_wait;
+}
+
+void tp_clear_waiting(void) {
+    tp_wait = 0;
 }
 
 void tp_init(void) {

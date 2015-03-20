@@ -7,6 +7,7 @@ void bl_init(void) {
     TRISCbits.TRISC3 = 1;
     TRISCbits.TRISC4 = 1;
     TRISCbits.TRISC5 = 0;
+    ANSELbits.ANS7 = 0;
     CCP1CON |= 0x0C;
     PSTRCONbits.STRA = 0;
     bl_disable();

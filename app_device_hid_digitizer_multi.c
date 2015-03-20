@@ -244,7 +244,7 @@ void APP_DeviceHIDDigitizerTasks()
     //is complete and the new device mode setting has taken effect.
     if(HIDApplicationModeChanging == true)
     {
-            return;
+        return;
     }
 
     Read_Digitizer();
@@ -252,16 +252,24 @@ void APP_DeviceHIDDigitizerTasks()
 
 static void Read_Digitizer(void)
 {
+    di();
+    if (!tp_waiting()) {
+        ei();
+        return;
+    }
+    ei();
     //Make sure the endpoint buffer (in this case hid_report_in[] is not busy
     //before we modify the contents of the buffer for the next transmission.
     if(!USBHandleBusy(lastTransmission))
     {
-
+        tp_read();
         tp_send(); // Populate USB report data
         lastTransmission = HIDTxPacket(HID_EP, (uint8_t*)hid_report_in, 32);
 
     }//end if(HIDTxHandleBusy(lastTransmission) == 0)
-
+    di();
+    tp_clear_waiting();
+    ei();
 }//end Emulate_Digitizer
 
 
