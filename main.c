@@ -23,7 +23,7 @@ int main()
     USBDeviceInit();
     USBDeviceAttach();
 
-    bl_init();
+    //bl_init();
     tp_init();
 
     tp_enable();
@@ -102,7 +102,9 @@ bool USER_USB_CALLBACK_EVENT_HANDLER(USB_EVENT event, void *pdata, uint16_t size
 void interrupt high_priority isr() {
     // Check all USB interrupts
     USBDeviceTasks();
+}
 
+void interrupt low_priority isr_low() {
     // Check touch panel interrupt
     tp_service();
 }

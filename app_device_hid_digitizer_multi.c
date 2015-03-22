@@ -147,7 +147,7 @@ contact data is sent to the host for each HID report.
     static unsigned char hid_report_in[HID_INT_IN_EP_SIZE];
     static unsigned char hid_report_out[HID_INT_OUT_EP_SIZE];
 #endif
-static USB_HANDLE lastTransmission;
+USB_HANDLE lastTransmission;
 
 static bool HIDApplicationModeChanging;
 static uint8_t DeviceIdentifier;
@@ -157,7 +157,6 @@ static uint8_t DeviceIdentifier;
 #define MULTI_TOUCH_DIGITIZER_MODE      0x02
 
 /** Private Prototypes *********************************************/
-static void Read_Digitizer(void);
 static void USBHIDCBSetReportComplete(void);
 
 /*********************************************************************
@@ -247,31 +246,7 @@ void APP_DeviceHIDDigitizerTasks()
         return;
     }
 
-    Read_Digitizer();
 }
-
-static void Read_Digitizer(void)
-{
-    di();
-    if (!tp_waiting()) {
-        ei();
-        return;
-    }
-    ei();
-    //Make sure the endpoint buffer (in this case hid_report_in[] is not busy
-    //before we modify the contents of the buffer for the next transmission.
-    if(!USBHandleBusy(lastTransmission))
-    {
-        tp_read();
-        tp_send(); // Populate USB report data
-        lastTransmission = HIDTxPacket(HID_EP, (uint8_t*)hid_report_in, 32);
-
-    }//end if(HIDTxHandleBusy(lastTransmission) == 0)
-    di();
-    tp_clear_waiting();
-    ei();
-}//end Emulate_Digitizer
-
 
 
 /********************************************************************
@@ -395,21 +370,6 @@ static void USBHIDCBSetReportComplete(void)
     //The hid_report_out[0] byte contains the Report ID that is getting set.
     //The hid_report_out[1] byte contains the Device Mode
     //The hid_report_out[2] byte contains the DeviceIdentifier
-
-#if 0
-    if(hid_report_out[0] == DEVICE_MODE_FEATURE_REPORT_ID)	//configuration setting feature Report ID = 0x03 = DEVICE_MODE_FEATURE_REPORT_ID
-    {
-        //Set the device variables now, so the firmware can behave according to the new
-        //settings that have been specified by the host.
-
-        //Error checking.  Make sure the host is trying to choose a valid setting.
-        if((hid_report_out[1] == MOUSE_MODE) || (hid_report_out[1] == SINGLE_TOUCH_DIGITIZER_MODE) || (hid_report_out[1] == MULTI_TOUCH_DIGITIZER_MODE))
-        {
-            DeviceMode = hid_report_out[1];		//The DeviceMode variable is used else where in the application firmware to determine the behavior/type of input reports sent to the host.
-            DeviceIdentifier = hid_report_out[2];
-        }
-    }
-#endif
 
     //The new device mode setting has been set.  Okay to start sending HID report
     //packets again on EP1 IN now.
