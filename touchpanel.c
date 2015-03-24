@@ -5,7 +5,6 @@
 #include "usb/usb_device_hid.h"
 
 #define I2C_SLAVE 0x38
-#define T_COUNT_INDEX 31
 
 static unsigned char hid_report_in[HID_INT_IN_EP_SIZE] DEVICE_HID_DIGITIZER_IN_BUFFER_ADDRESS;
 static touch_data tp_data;
@@ -14,11 +13,13 @@ extern USB_HANDLE lastTransmission;
 
 void tp_service(void) {
     if (!INTCON3bits.INT1IF) return;
+    INTCON3bits.INT1IE = 0;
 
     tp_read();
     tp_send();
 
     INTCON3bits.INT1IF = 0;
+    INTCON3bits.INT1IE = 1;
 }
 
 void tp_init(void) {
@@ -76,19 +77,20 @@ void tp_read(void) {
     unsigned char i;
 
     // Read one byte
-    i2c_Start();      			// send Start
-    i2c_Address(I2C_SLAVE, I2C_WRITE);	// Send slave address with write operation
-    i2c_Write(0x00);			// Set register to start reading
-    i2c_Restart();			// Restart
-    i2c_Address(I2C_SLAVE, I2C_READ);	// Send slave address with read operation
+    i2c_Start(); // send Start
+    i2c_Address(I2C_SLAVE, I2C_WRITE); // Send slave address with write operation
+    i2c_Write(0x00); // Set register to start reading
+    i2c_Restart(); // Restart
+    i2c_Address(I2C_SLAVE, I2C_READ); // Send slave address with read operation
 
     for (i = 0; i < 0x1E; i++) {
         tp_data.raw[i] = i2c_Read(1);
     }
     tp_data.raw[0x1E] = i2c_Read(0);
 
-   i2c_Stop();				// send Stop
+    i2c_Stop(); // send Stop
 }
+
 /**
  * Populate USB buffer with touch pad multitouch data
  *
@@ -99,63 +101,50 @@ void tp_send(void) {
         // Report ID for multi-touch contact information reports (based on report descriptor)
         hid_report_in[0] = 0x01; //Report ID in byte[0]
 
-        hid_report_in[T_COUNT_INDEX] = tp_data.data.TD_STATUS & 0b00000111; // Number of valid contacts
 
         // Touch point 1
-        if (hid_report_in[T_COUNT_INDEX] >= 1 && (tp_data.data.TOUCH1_XH >> 6) != 1)
-            hid_report_in[1] = 1;
-        else
-            hid_report_in[1] = 0;
+        hid_report_in[1] = ((tp_data.data.TOUCH1_EVENT == 0b01) ? 1 : 0) << 7
+                | tp_data.data.TOUCH1_ID;
         //First contact info in bytes 1-6
-        hid_report_in[2] = (tp_data.data.TOUCH1_YH >> 4) & 0x00001111; //Contact ID
-        hid_report_in[3] = tp_data.data.TOUCH1_XL; //X-coord LSB
-        hid_report_in[4] = tp_data.data.TOUCH1_XH & 0x00001111; //X-coord MSB
-        hid_report_in[5] = tp_data.data.TOUCH1_YL; //Y-coord LSB
-        hid_report_in[6] = tp_data.data.TOUCH1_YH & 0x00001111; //Y-coord MSB
+        hid_report_in[2] = tp_data.data.TOUCH1_XL; //X-coord LSB
+        hid_report_in[3] = tp_data.data.TOUCH1_XH; //X-coord MSB
+        hid_report_in[4] = tp_data.data.TOUCH1_YL; //Y-coord LSB
+        hid_report_in[5] = tp_data.data.TOUCH1_YH; //Y-coord MSB
 
         // Touch point 2
-        if (hid_report_in[T_COUNT_INDEX] >= 2 && (tp_data.data.TOUCH2_XH >> 6) != 1)
-            hid_report_in[7] = 1;
-        else
-            hid_report_in[7] = 0;
-        hid_report_in[8] = (tp_data.data.TOUCH2_YH >> 4) & 0x00001111; //Contact ID
-        hid_report_in[9] = tp_data.data.TOUCH2_XL; //X-coord LSB
-        hid_report_in[10] = tp_data.data.TOUCH2_XH & 0x00001111; //X-coord MSB
-        hid_report_in[11] = tp_data.data.TOUCH2_YL; //Y-coord LSB
-        hid_report_in[12] = tp_data.data.TOUCH2_YH & 0x00001111; //Y-coord MSB
+        hid_report_in[6] = ((tp_data.data.TOUCH2_EVENT == 0b01) ? 1 : 0) << 7
+                | tp_data.data.TOUCH2_ID;
+        hid_report_in[7] = tp_data.data.TOUCH2_XL; //X-coord LSB
+        hid_report_in[8] = tp_data.data.TOUCH2_XH; //X-coord MSB
+        hid_report_in[9] = tp_data.data.TOUCH2_YL; //Y-coord LSB
+        hid_report_in[10] = tp_data.data.TOUCH2_YH; //Y-coord MSB
 
         // Touch point 3
-        if (hid_report_in[T_COUNT_INDEX] >= 3 && (tp_data.data.TOUCH3_XH >> 6) != 1)
-            hid_report_in[13] = 1;
-        else
-            hid_report_in[13] = 0;
-        hid_report_in[14] = (tp_data.data.TOUCH3_YH >> 4) & 0x00001111; //Contact ID
-        hid_report_in[15] = tp_data.data.TOUCH3_XL; //X-coord LSB
-        hid_report_in[16] = tp_data.data.TOUCH3_XH & 0x00001111; //X-coord MSB
-        hid_report_in[17] = tp_data.data.TOUCH3_YL; //Y-coord LSB
-        hid_report_in[18] = tp_data.data.TOUCH3_YH & 0x00001111; //Y-coord MSB
+        hid_report_in[11] = ((tp_data.data.TOUCH3_EVENT == 0b01) ? 1 : 0) << 7
+                | tp_data.data.TOUCH3_ID;
+        hid_report_in[12] = tp_data.data.TOUCH3_XL; //X-coord LSB
+        hid_report_in[13] = tp_data.data.TOUCH3_XH; //X-coord MSB
+        hid_report_in[14] = tp_data.data.TOUCH3_YL; //Y-coord LSB
+        hid_report_in[15] = tp_data.data.TOUCH3_YH; //Y-coord MSB
 
         // Touch point 4
-        if (hid_report_in[T_COUNT_INDEX] >= 4 && (tp_data.data.TOUCH4_XH >> 6) != 1)
-            hid_report_in[19] = 1;
-        else
-            hid_report_in[19] = 0;
-        hid_report_in[20] = (tp_data.data.TOUCH4_YH >> 4) & 0x00001111; //Contact ID
-        hid_report_in[21] = tp_data.data.TOUCH4_XL; //X-coord LSB
-        hid_report_in[22] = tp_data.data.TOUCH4_XH & 0x00001111; //X-coord MSB
-        hid_report_in[23] = tp_data.data.TOUCH4_YL; //Y-coord LSB
-        hid_report_in[24] = tp_data.data.TOUCH4_YH & 0x00001111; //Y-coord MSB
+        hid_report_in[16] = ((tp_data.data.TOUCH4_EVENT == 0b01) ? 1 : 0) << 7
+                | tp_data.data.TOUCH4_ID;
+        hid_report_in[17] = tp_data.data.TOUCH4_XL; //X-coord LSB
+        hid_report_in[18] = tp_data.data.TOUCH4_XH; //X-coord MSB
+        hid_report_in[19] = tp_data.data.TOUCH4_YL; //Y-coord LSB
+        hid_report_in[20] = tp_data.data.TOUCH4_YH; //Y-coord MSB
 
         // Touch point 5
-        if (hid_report_in[T_COUNT_INDEX] >= 5 && (tp_data.data.TOUCH5_XH >> 6) != 1)
-            hid_report_in[25] = 1;
-        else
-            hid_report_in[25] = 0;
-        hid_report_in[26] = (tp_data.data.TOUCH5_YH >> 4) & 0x00001111; //Contact ID
-        hid_report_in[27] = tp_data.data.TOUCH5_XL; //X-coord LSB
-        hid_report_in[28] = tp_data.data.TOUCH5_XH & 0x00001111; //X-coord MSB
-        hid_report_in[29] = tp_data.data.TOUCH5_YL; //Y-coord LSB
-        hid_report_in[30] = tp_data.data.TOUCH5_YH & 0x00001111; //Y-coord MSB
-        lastTransmission = HIDTxPacket(HID_EP, (uint8_t*) hid_report_in, 32);
+        hid_report_in[21] = ((tp_data.data.TOUCH5_EVENT == 0b01) ? 1 : 0) << 7
+                | tp_data.data.TOUCH5_ID;
+        hid_report_in[22] = tp_data.data.TOUCH5_XL; //X-coord LSB
+        hid_report_in[23] = tp_data.data.TOUCH5_XH; //X-coord MSB
+        hid_report_in[24] = tp_data.data.TOUCH5_YL; //Y-coord LSB
+        hid_report_in[25] = tp_data.data.TOUCH5_YH; //Y-coord MSB
+
+        hid_report_in[26] = tp_data.data.TOUCH_POINTS; // Number of valid contacts
+
+        lastTransmission = HIDTxPacket(HID_EP, (uint8_t*) hid_report_in, 27);
     }//end if(HIDTxHandleBusy(lastTransmission) == 0)
 }

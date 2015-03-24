@@ -180,7 +180,7 @@ const USB_DEVICE_DESCRIPTOR device_dsc=
     USB_EP0_BUFF_SIZE,      // Max packet size for EP0, see usb_config.h
     MY_VID,                 // Vendor ID
     MY_PID,                 // Product ID
-    0x0002,                 // Device release number in BCD format
+    0x0003,                 // Device release number in BCD format
     0x01,                   // Manufacturer string index
     0x02,                   // Product string index
     0x00,                   // Device serial number string index
@@ -197,7 +197,7 @@ const uint8_t configDescriptor1[]={
     1,                      // Index value of this configuration
     0,                      // Configuration string index
     _DEFAULT | _SELF | _RWU,// Attributes, see usb_device.h
-    50,                     // Max power consumption (2X mA)
+    150,                     // Max power consumption (2X mA)
 
     /* Interface Descriptor */
     0x09,//sizeof(USB_INTF_DSC),   // Size of this descriptor in bytes
@@ -285,174 +285,176 @@ sizeof(sd002),USB_DESCRIPTOR_STRING,
 //example HID report descriptor.
 
 const struct{uint8_t report[HID_RPT01_SIZE];}hid_rpt01={
-{
-    //Byte[0] = Report ID == 0x01 == When sending packets of contact information to the host, use the literal value Report ID = 0x01 for this example.
-
-    //First contact point info in bytes 1-6.
-    //Byte[1] = Bits7-3: pad bits (unused), Bit1:In Range, Bit0:Tip Switch
-    //Byte[2] = Contact identifier number (see note below)
-    //Byte[3] = X-coordinate LSB
-    //Byte[4] = X-coordinate MSB
-    //Byte[5] = Y-coordinate LSB
-    //Byte[6] = Y-coordinate MSB
-    //...
-    //Byte[n]= 8-bit number indicating how many of the above contact points are valid.
-
-    0x05, 0x0D,	          // USAGE_PAGE (Digitizers)
-    0x09, 0x04,	          // USAGE (Touch Screen)
-    0xA1, 0x01,           // COLLECTION (Application)
-    0x85, 0x01, 	  //   REPORT_ID (Touch)              	//When the firmware wants to send a HID report (containing contact information), the Report ID byte should match this number (0x01 in this case).
-    0x09, 0x22,  //10     //   USAGE (Finger)
-    0xA1, 0x02,           //     COLLECTION (Logical)
-    0x09, 0x42,           //       USAGE (Tip Switch)
-    0x15, 0x00,           //       LOGICAL_MINIMUM (0)
-    0x25, 0x01,           //       LOGICAL_MAXIMUM (1)
-    0x75, 0x01,  //20     //       REPORT_SIZE (1)
-    0x95, 0x01,           //       REPORT_COUNT (1)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs) 		//Makes one, 1-bit field for tip switch
-    0x95, 0x07,           //       REPORT_COUNT (7)
-    0x81, 0x03,           //       INPUT (Cnst,Ary,Abs)			//Makes seven, 1-bit fields, which are pad bits (no valid data)
-    0x75, 0x08,  //30     //       REPORT_SIZE (8)
-    0x09, 0x51,           //       USAGE (Contact Identifier)
-    0x95, 0x01,           //       REPORT_COUNT (1)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs) 		//Makes one, 8-bit field for the contact identifier number.  Firmware arbitrarily assigns a contact ID, which stays the same until the contact becomes invalid (finger removed from screen).
-    0x05, 0x01,           //       USAGE_PAGE (Generic Desk..
-    0x26, 0x20, 0x03,//41 //       LOGICAL_MAXIMUM (800)        // Touch panel width
-    0x75, 0x10,           //       REPORT_SIZE (16)
-    0x55, 0x0E,           //       UNIT_EXPONENT (-2)           //10^(-2)
-    0x65, 0x33,           //       UNIT (Inches, English Linear)
-    0x09, 0x30,           //       USAGE (X)
-    0x35, 0x00,           //       PHYSICAL_MINIMUM (0)
-    0x46, 0xAD, 0x01,     //       PHYSICAL_MAXIMUM (0x1AD = 429)     //429 * 10^(-2) = 4.29 inches X-dimension
-    0x81, 0x02,  //56     //       INPUT (Data,Var,Abs)           //Makes one, 16-bit field for X coordinate info.  Valid values from: 0-4800 (4800 is the LOGICAL_MAXIMUM, which would correspond to far edge of the screen, which is 1600x10mil distance from X origin [left of screen])
-    0x26, 0xE0, 0x01,     //       LOGICAL_MAXIMUM (480)        // Touch panel height
-    0x46, 0x03, 0x01,     //       PHYSICAL_MAXIMUM (0x103 = 259)    //259 * 10^(-2) = 2.59 inches Y-dimension
-    0x09, 0x31,           //       USAGE (Y)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs)			//Makes one, 16-bit field for Y coordinate info.  Valid values from: 0-3000 (3000 is the LOGICAL_MAIXMUM, which would correspond to the far bottom of the screen, which is 1000x10mil distance from the Y origin [top of screen])
-    0xC0,                 //    END_COLLECTION
-    0xA1, 0x02,           //    COLLECTION (Logical)
-    0x05, 0x0D,	 //71     //       USAGE_PAGE (Digitizers)
-    0x09, 0x42,           //       USAGE (Tip Switch)
-    0x15, 0x00,           //       LOGICAL_MINIMUM (0)
-    0x25, 0x01,           //       LOGICAL_MAXIMUM (1)
-    0x75, 0x01,           //       REPORT_SIZE (1)
-    0x95, 0x01,  //81     //       REPORT_COUNT (1)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs) 		//Makes one, 1-bit field for Tip Switch
-    0x95, 0x07,           //       REPORT_COUNT (7)
-    0x81, 0x03,           //       INPUT (Cnst,Ary,Abs)			//Makes seven, 1-bit fields that are pad bits (no valid data)
-    0x75, 0x08,           //       REPORT_SIZE (8)
-    0x09, 0x51,   //91    //       USAGE (Contact Identifier)
-    0x95, 0x01,           //       REPORT_COUNT (1)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs)			//Makes one, 8-bit field for the contact identifier number.
-    0x05, 0x01,           //       USAGE_PAGE (Generic Desk..
-    0x26, 0x20, 0x03,//100//       LOGICAL_MAXIMUM (800)        // Screen width
-    0x75, 0x10,           //       REPORT_SIZE (16)
-    0x55, 0x0E,           //       UNIT_EXPONENT (-2)           //10^(-2)
-    0x65, 0x33,           //       UNIT (Inches, English Linear)
-    0x09, 0x30,           //       USAGE (X)
-    0x35, 0x00,   //110   //       PHYSICAL_MINIMUM (0)
-    0x46, 0xAD, 0x01,     //       PHYSICAL_MAXIMUM (0x1AD = 429)     //429 * 10^(-2) = 4.29 inches X-dimension
-    0x81, 0x02,           //       INPUT (Data,Var,Abs)         //Makes one, 16-bit field for X coordinate info.  Valid values from: 0-4800
-    0x26, 0xE0, 0x01,     //       LOGICAL_MAXIMUM (480)        // Screen height
-    0x46, 0x03, 0x01,     //       PHYSICAL_MAXIMUM (0x103 = 259)    //259 * 10^(-2) = 2.59 inches Y-dimension
-    0x09, 0x31,           //       USAGE (Y)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs)         //Makes one, 16-bit field for X coordinate info, valid values: 0-3071
-    0xC0,                 //    END_COLLECTION
-    0xA1, 0x02,           //    COLLECTION (Logical)
-    0x05, 0x0D,	 //130    //       USAGE_PAGE (Digitizers)
-    0x09, 0x42,           //       USAGE (Tip Switch)
-    0x15, 0x00,           //       LOGICAL_MINIMUM (0)
-    0x25, 0x01,           //       LOGICAL_MAXIMUM (1)
-    0x75, 0x01,           //       REPORT_SIZE (1)
-    0x95, 0x01,  //140    //       REPORT_COUNT (1)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs) 		//Makes one, 1-bit field for Tip Switch
-    0x95, 0x07,           //       REPORT_COUNT (7)
-    0x81, 0x03,           //       INPUT (Cnst,Ary,Abs)			//Makes seven, 1-bit fields that are pad bits (no valid data)
-    0x75, 0x08,           //       REPORT_SIZE (8)
-    0x09, 0x51,  //150    //       USAGE (Contact Identifier)
-    0x95, 0x01,           //       REPORT_COUNT (1)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs)			//Makes one, 8-bit field for the contact identifier number.
-    0x05, 0x01,           //       USAGE_PAGE (Generic Desk..
-    0x26, 0x20, 0x03,     //       LOGICAL_MAXIMUM (800)        // Screen width
-    0x75, 0x10,           //       REPORT_SIZE (16)
-    0x55, 0x0E,           //       UNIT_EXPONENT (-2)       //10^(-2)
-    0x65, 0x33,           //       UNIT (Inches, English Linear)  //But exponent -2, so Physical Maximum is in 10?s of mils.
-    0x09, 0x30,           //       USAGE (X)
-    0x35, 0x00,           //       PHYSICAL_MINIMUM (0)
-    0x46, 0xAD, 0x01,     //       PHYSICAL_MAXIMUM (0x1AD = 429)     //429 * 10^(-2) = 4.29 inches X-dimension
-    0x81, 0x02,           //       INPUT (Data,Var,Abs)           //Makes one, 16-bit field for X coordinate info.  Valid values from: 0-4800
-    0x26, 0xE0, 0x01,     //       LOGICAL_MAXIMUM (480)        // Screen height
-    0x46, 0x03, 0x01,//180//       PHYSICAL_MAXIMUM (0x103 = 259)    //259 * 10^(-2) = 2.59 inches Y-dimension
-    0x09, 0x31,           //       USAGE (Y)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs)			//Makes one, 16-bit field for X coordinate info, valid values: 0-3071
-    0xC0,                 //    END_COLLECTION
-    0xA1, 0x02,           //    COLLECTION (Logical)
-    0x05, 0x0D,	          //       USAGE_PAGE (Digitizers)
-    0x09, 0x42,           //       USAGE (Tip Switch)
-    0x15, 0x00,           //       LOGICAL_MINIMUM (0)
-    0x25, 0x01,  //195    //       LOGICAL_MAXIMUM (1)
-    0x75, 0x01,           //       REPORT_SIZE (1)
-    0x95, 0x01,           //       REPORT_COUNT (1)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs) 		//Makes one, 1-bit field for Tip Switch
-    0x95, 0x07,           //       REPORT_COUNT (7)
-    0x81, 0x03,           //       INPUT (Cnst,Ary,Abs)			//Makes seven, 1-bit fields that are pad bits (no valid data)
-    0x75, 0x08,           //       REPORT_SIZE (8)
-    0x09, 0x51,           //       USAGE (Contact Identifier)
-    0x95, 0x01,           //       REPORT_COUNT (1)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs)			//Makes one, 8-bit field for the contact identifier number.
-    0x05, 0x01,  //215    //       USAGE_PAGE (Generic Desk..
-    0x26, 0x20, 0x03,     //       LOGICAL_MAXIMUM (800)
-    0x75, 0x10,           //       REPORT_SIZE (16)
-    0x55, 0x0E,           //       UNIT_EXPONENT (-2)       //10^(-2)
-    0x65, 0x33,           //       UNIT (Inches, English Linear)  //But exponent -2, so Physical Maximum is in 10?s of mils.
-    0x09, 0x30,           //       USAGE (X)
-    0x35, 0x00,           //       PHYSICAL_MINIMUM (0)
-    0x46, 0xAD, 0x01,     //       PHYSICAL_MAXIMUM (0x1AD = 429)     //429 * 10^(-2) = 4.29 inches X-dimension
-    0x81, 0x02,           //       INPUT (Data,Var,Abs)           //Makes one, 16-bit field for X coordinate info.  Valid values from: 0-4800
-    0x26, 0xE0, 0x01,     //       LOGICAL_MAXIMUM (480)             //16:10 aspect ratio (X:Y)
-    0x46, 0x03, 0x01,     //       PHYSICAL_MAXIMUM (0x103 = 259)    //259 * 10^(-2) = 2.59 inches Y-dimension
-    0x09, 0x31,           //       USAGE (Y)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs)			//Makes one, 16-bit field for X coordinate info, valid values: 0-3071
-    0xC0,        //244    //    END_COLLECTION
-    0xA1, 0x02,           //    COLLECTION (Logical)
-    0x05, 0x0D,	          //       USAGE_PAGE (Digitizers)
-    0x09, 0x42,           //       USAGE (Tip Switch)
-    0x15, 0x00,           //       LOGICAL_MINIMUM (0)
-    0x25, 0x01,           //       LOGICAL_MAXIMUM (1)
-    0x75, 0x01,           //       REPORT_SIZE (1)
-    0x95, 0x01,           //       REPORT_COUNT (1)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs) 		//Makes one, 1-bit field for Tip Switch
-    0x95, 0x07,           //       REPORT_COUNT (7)
-    0x81, 0x03,           //       INPUT (Cnst,Ary,Abs)			//Makes seven, 1-bit fields that are pad bits (no valid data)
-    0x75, 0x08,           //       REPORT_SIZE (8)
-    0x09, 0x51,           //       USAGE (Contact Identifier)
-    0x95, 0x01,  //270    //       REPORT_COUNT (1)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs)			//Makes one, 8-bit field for the contact identifier number.
-    0x05, 0x01,           //       USAGE_PAGE (Generic Desk..
-    0x26, 0x20, 0x03,     //       LOGICAL_MAXIMUM (800)
-    0x75, 0x10,           //       REPORT_SIZE (16)
-    0x55, 0x0E,           //       UNIT_EXPONENT (-2)       //10^(-2)
-    0x65, 0x33,           //       UNIT (Inches, English Linear)  //But exponent -2, so Physical Maximum is in 10?s of mils.
-    0x09, 0x30,  //285    //       USAGE (X)
-    0x35, 0x00,           //       PHYSICAL_MINIMUM (0)
-    0x46, 0xAD, 0x01,     //       PHYSICAL_MAXIMUM (0x1AD = 429)     //429 * 10^(-2) = 4.29 inches X-dimension
-    0x81, 0x02,           //       INPUT (Data,Var,Abs)           //Makes one, 16-bit field for X coordinate info.  Valid values from: 0-4800
-    0x26, 0xE0, 0x01,     //       LOGICAL_MAXIMUM (480)             //16:10 aspect ratio (X:Y)
-    0x46, 0x03, 0x01,     //       PHYSICAL_MAXIMUM (0x103 = 259)    //259 * 10^(-2) = 2.59 inches Y-dimension
-    0x09, 0x31,  //300    //       USAGE (Y)
-    0x81, 0x02,           //       INPUT (Data,Var,Abs)			//Makes one, 16-bit field for X coordinate info, valid values: 0-3071
-    0xC0,                 //   END_COLLECTION
-    0x05, 0x0D,	          //   USAGE_PAGE (Digitizers)
-    0x09, 0x54,	          //   USAGE (Actual count)
-    0x95, 0x01,           //   REPORT_COUNT (1)
-    0x75, 0x08,           //   REPORT_SIZE (8)
-    0x25, 0x05,           //   LOGICAL_MAXIMUM (5)          //Maximum number of valid contact points simutaneously supported
-    0x81, 0x02,           //   INPUT (Data,Var,Abs)         //Makes one, 8-bit field for the actual number of valid contacts reported
-    0x85, 0x02,           //   REPORT_ID (Feature)          //When the firmware wants to send a feature report, the Report ID byte should match this number (0x02 in this case).
-    0x09, 0x55,           //   USAGE(Maximum Count)
-    0xB1, 0x02,           //   FEATURE (Data,Var,Abs)
-    0xC0         //322    // END_COLLECTION
-	}
+    {
+/* Data format:
+ * |  7  |  6  |  5  |  4  |  3  |  2  |  1  |  0  |
+ * | Tip |xxxxx| Contact Identifier                |
+ * | X                                             |
+ * |                                               |
+ * | Y                                             |
+ * |                                               |
+ * ... 5 times
+ * | Contact Count                                 |
+ */
+    0x05, 0x0d,                    // USAGE_PAGE (Digitizers)
+    0x09, 0x04,                    // USAGE (Touch Screen)
+    0xa1, 0x01,                    // COLLECTION (Application)
+    0x85, 0x01,                    //   REPORT_ID (1)
+    0x09, 0x22,                    //   USAGE (Finger)
+    0xa1, 0x02,                    //   COLLECTION (Logical)
+    0x09, 0x42,                    //     USAGE (Tip Switch)
+    0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
+    0x25, 0x01,                    //     LOGICAL_MAXIMUM (1)
+    0x75, 0x01,                    //     REPORT_SIZE (1)
+    0x95, 0x01,                    //     REPORT_COUNT (1)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0x81, 0x03,                    //     INPUT (Cnst,Var,Abs)
+    0x75, 0x06,                    //     REPORT_SIZE (6)
+    0x25, 0x3f,                    //     LOGICAL_MAXIMUM (63)
+    0x09, 0x51,                    //     USAGE (Contact Identifier)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0xa4,                          //     PUSH
+    0x05, 0x01,                    //     USAGE_PAGE (Generic Desktop)
+    0x75, 0x10,                    //     REPORT_SIZE (16)
+    0x26, 0x20, 0x03,              //     LOGICAL_MAXIMUM (800)
+    0x46, 0xad, 0x01,              //     PHYSICAL_MAXIMUM (429)
+    0x55, 0x0e,                    //     UNIT_EXPONENT (-2)
+    0x65, 0x33,                    //     UNIT (Eng Lin:0x33)
+    0x09, 0x30,                    //     USAGE (X)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0x26, 0xe0, 0x01,              //     LOGICAL_MAXIMUM (480)
+    0x46, 0x03, 0x01,              //     PHYSICAL_MAXIMUM (259)
+    0x09, 0x31,                    //     USAGE (Y)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0xb4,                          //     POP
+    0xc0,                          //   END_COLLECTION
+    0x05, 0x0d,                    //   USAGE_PAGE (Digitizers)
+    0x09, 0x22,                    //   USAGE (Finger)
+    0xa1, 0x02,                    //   COLLECTION (Logical)
+    0x09, 0x42,                    //     USAGE (Tip Switch)
+    0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
+    0x25, 0x01,                    //     LOGICAL_MAXIMUM (1)
+    0x75, 0x01,                    //     REPORT_SIZE (1)
+    0x95, 0x01,                    //     REPORT_COUNT (1)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0x81, 0x03,                    //     INPUT (Cnst,Var,Abs)
+    0x75, 0x06,                    //     REPORT_SIZE (6)
+    0x25, 0x3f,                    //     LOGICAL_MAXIMUM (63)
+    0x09, 0x51,                    //     USAGE (Contact Identifier)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0xa4,                          //     PUSH
+    0x05, 0x01,                    //     USAGE_PAGE (Generic Desktop)
+    0x75, 0x10,                    //     REPORT_SIZE (16)
+    0x26, 0x20, 0x03,              //     LOGICAL_MAXIMUM (800)
+    0x46, 0xad, 0x01,              //     PHYSICAL_MAXIMUM (429)
+    0x55, 0x0e,                    //     UNIT_EXPONENT (-2)
+    0x65, 0x33,                    //     UNIT (Eng Lin:0x33)
+    0x09, 0x30,                    //     USAGE (X)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0x26, 0xe0, 0x01,              //     LOGICAL_MAXIMUM (480)
+    0x46, 0x03, 0x01,              //     PHYSICAL_MAXIMUM (259)
+    0x09, 0x31,                    //     USAGE (Y)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0xb4,                          //     POP
+    0xc0,                          //   END_COLLECTION
+    0x05, 0x0d,                    //   USAGE_PAGE (Digitizers)
+    0x09, 0x22,                    //   USAGE (Finger)
+    0xa1, 0x02,                    //   COLLECTION (Logical)
+    0x09, 0x42,                    //     USAGE (Tip Switch)
+    0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
+    0x25, 0x01,                    //     LOGICAL_MAXIMUM (1)
+    0x75, 0x01,                    //     REPORT_SIZE (1)
+    0x95, 0x01,                    //     REPORT_COUNT (1)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0x81, 0x03,                    //     INPUT (Cnst,Var,Abs)
+    0x75, 0x06,                    //     REPORT_SIZE (6)
+    0x25, 0x3f,                    //     LOGICAL_MAXIMUM (63)
+    0x09, 0x51,                    //     USAGE (Contact Identifier)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0xa4,                          //     PUSH
+    0x05, 0x01,                    //     USAGE_PAGE (Generic Desktop)
+    0x75, 0x10,                    //     REPORT_SIZE (16)
+    0x26, 0x20, 0x03,              //     LOGICAL_MAXIMUM (800)
+    0x46, 0xad, 0x01,              //     PHYSICAL_MAXIMUM (429)
+    0x55, 0x0e,                    //     UNIT_EXPONENT (-2)
+    0x65, 0x33,                    //     UNIT (Eng Lin:0x33)
+    0x09, 0x30,                    //     USAGE (X)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0x26, 0xe0, 0x01,              //     LOGICAL_MAXIMUM (480)
+    0x46, 0x03, 0x01,              //     PHYSICAL_MAXIMUM (259)
+    0x09, 0x31,                    //     USAGE (Y)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0xb4,                          //     POP
+    0xc0,                          //   END_COLLECTION
+    0x05, 0x0d,                    //   USAGE_PAGE (Digitizers)
+    0x09, 0x22,                    //   USAGE (Finger)
+    0xa1, 0x02,                    //   COLLECTION (Logical)
+    0x09, 0x42,                    //     USAGE (Tip Switch)
+    0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
+    0x25, 0x01,                    //     LOGICAL_MAXIMUM (1)
+    0x75, 0x01,                    //     REPORT_SIZE (1)
+    0x95, 0x01,                    //     REPORT_COUNT (1)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0x81, 0x03,                    //     INPUT (Cnst,Var,Abs)
+    0x75, 0x06,                    //     REPORT_SIZE (6)
+    0x25, 0x3f,                    //     LOGICAL_MAXIMUM (63)
+    0x09, 0x51,                    //     USAGE (Contact Identifier)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0xa4,                          //     PUSH
+    0x05, 0x01,                    //     USAGE_PAGE (Generic Desktop)
+    0x75, 0x10,                    //     REPORT_SIZE (16)
+    0x26, 0x20, 0x03,              //     LOGICAL_MAXIMUM (800)
+    0x46, 0xad, 0x01,              //     PHYSICAL_MAXIMUM (429)
+    0x55, 0x0e,                    //     UNIT_EXPONENT (-2)
+    0x65, 0x33,                    //     UNIT (Eng Lin:0x33)
+    0x09, 0x30,                    //     USAGE (X)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0x26, 0xe0, 0x01,              //     LOGICAL_MAXIMUM (480)
+    0x46, 0x03, 0x01,              //     PHYSICAL_MAXIMUM (259)
+    0x09, 0x31,                    //     USAGE (Y)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0xb4,                          //     POP
+    0xc0,                          //   END_COLLECTION
+    0x05, 0x0d,                    //   USAGE_PAGE (Digitizers)
+    0x09, 0x22,                    //   USAGE (Finger)
+    0xa1, 0x02,                    //   COLLECTION (Logical)
+    0x09, 0x42,                    //     USAGE (Tip Switch)
+    0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
+    0x25, 0x01,                    //     LOGICAL_MAXIMUM (1)
+    0x75, 0x01,                    //     REPORT_SIZE (1)
+    0x95, 0x01,                    //     REPORT_COUNT (1)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0x81, 0x03,                    //     INPUT (Cnst,Var,Abs)
+    0x75, 0x06,                    //     REPORT_SIZE (6)
+    0x25, 0x3f,                    //     LOGICAL_MAXIMUM (63)
+    0x09, 0x51,                    //     USAGE (Contact Identifier)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0xa4,                          //     PUSH
+    0x05, 0x01,                    //     USAGE_PAGE (Generic Desktop)
+    0x75, 0x10,                    //     REPORT_SIZE (16)
+    0x26, 0x20, 0x03,              //     LOGICAL_MAXIMUM (800)
+    0x46, 0xad, 0x01,              //     PHYSICAL_MAXIMUM (429)
+    0x55, 0x0e,                    //     UNIT_EXPONENT (-2)
+    0x65, 0x33,                    //     UNIT (Eng Lin:0x33)
+    0x09, 0x30,                    //     USAGE (X)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0x26, 0xe0, 0x01,              //     LOGICAL_MAXIMUM (480)
+    0x46, 0x03, 0x01,              //     PHYSICAL_MAXIMUM (259)
+    0x09, 0x31,                    //     USAGE (Y)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0xb4,                          //     POP
+    0xc0,                          //   END_COLLECTION
+    0x05, 0x0d,                    //   USAGE_PAGE (Digitizers)
+    0x09, 0x54,                    //   USAGE (Contact Count)
+    0x95, 0x01,                    //   REPORT_COUNT (1)
+    0x75, 0x08,                    //   REPORT_SIZE (8)
+    0x25, 0x05,                    //   LOGICAL_MAXIMUM (5)
+    0x81, 0x02,                    //   INPUT (Data,Var,Abs)
+    0x85, 0x02,                    //   REPORT_ID (2)
+    0x09, 0x55,                    //   USAGE (Contact Count Maximum)
+    0xb1, 0x02,                    //   FEATURE (Data,Var,Abs)
+    0xc0                           // END_COLLECTION
+    }
 };// end of HID report descriptor
 
 

@@ -23,12 +23,12 @@ int main()
     USBDeviceInit();
     USBDeviceAttach();
 
-    //bl_init();
+    bl_init();
     tp_init();
 
     tp_enable();
 
-    //bl_enable();
+    bl_enable();
     while(1)
     {
         /* If the USB device isn't configured yet, we can't really do anything
