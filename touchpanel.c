@@ -103,8 +103,8 @@ void tp_send(void) {
 
 
         // Touch point 1
-        hid_report_in[1] = ((tp_data.data.TOUCH1_EVENT == 0b01) ? 1 : 0) << 7
-                | tp_data.data.TOUCH1_ID;
+        hid_report_in[1] = ((tp_data.data.TOUCH_POINTS >= 1) ? 3 : 0)
+                | tp_data.data.TOUCH1_ID << 2;
         //First contact info in bytes 1-6
         hid_report_in[2] = tp_data.data.TOUCH1_XL; //X-coord LSB
         hid_report_in[3] = tp_data.data.TOUCH1_XH; //X-coord MSB
@@ -112,32 +112,32 @@ void tp_send(void) {
         hid_report_in[5] = tp_data.data.TOUCH1_YH; //Y-coord MSB
 
         // Touch point 2
-        hid_report_in[6] = ((tp_data.data.TOUCH2_EVENT == 0b01) ? 1 : 0) << 7
-                | tp_data.data.TOUCH2_ID;
+        hid_report_in[6] = ((tp_data.data.TOUCH_POINTS >= 2) ? 3 : 0)
+                | tp_data.data.TOUCH2_ID << 2;
         hid_report_in[7] = tp_data.data.TOUCH2_XL; //X-coord LSB
         hid_report_in[8] = tp_data.data.TOUCH2_XH; //X-coord MSB
         hid_report_in[9] = tp_data.data.TOUCH2_YL; //Y-coord LSB
         hid_report_in[10] = tp_data.data.TOUCH2_YH; //Y-coord MSB
 
         // Touch point 3
-        hid_report_in[11] = ((tp_data.data.TOUCH3_EVENT == 0b01) ? 1 : 0) << 7
-                | tp_data.data.TOUCH3_ID;
+        hid_report_in[11] = ((tp_data.data.TOUCH_POINTS >= 3) ? 3 : 0)
+                | tp_data.data.TOUCH3_ID << 2;
         hid_report_in[12] = tp_data.data.TOUCH3_XL; //X-coord LSB
         hid_report_in[13] = tp_data.data.TOUCH3_XH; //X-coord MSB
         hid_report_in[14] = tp_data.data.TOUCH3_YL; //Y-coord LSB
         hid_report_in[15] = tp_data.data.TOUCH3_YH; //Y-coord MSB
 
         // Touch point 4
-        hid_report_in[16] = ((tp_data.data.TOUCH4_EVENT == 0b01) ? 1 : 0) << 7
-                | tp_data.data.TOUCH4_ID;
+        hid_report_in[16] = ((tp_data.data.TOUCH_POINTS >= 4) ? 3 : 0)
+                | tp_data.data.TOUCH4_ID << 2;
         hid_report_in[17] = tp_data.data.TOUCH4_XL; //X-coord LSB
         hid_report_in[18] = tp_data.data.TOUCH4_XH; //X-coord MSB
         hid_report_in[19] = tp_data.data.TOUCH4_YL; //Y-coord LSB
         hid_report_in[20] = tp_data.data.TOUCH4_YH; //Y-coord MSB
 
         // Touch point 5
-        hid_report_in[21] = ((tp_data.data.TOUCH5_EVENT == 0b01) ? 1 : 0) << 7
-                | tp_data.data.TOUCH5_ID;
+        hid_report_in[21] = ((tp_data.data.TOUCH_POINTS >= 5) ? 3 : 0)
+                | tp_data.data.TOUCH5_ID << 2;
         hid_report_in[22] = tp_data.data.TOUCH5_XL; //X-coord LSB
         hid_report_in[23] = tp_data.data.TOUCH5_XH; //X-coord MSB
         hid_report_in[24] = tp_data.data.TOUCH5_YL; //Y-coord LSB

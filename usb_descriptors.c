@@ -288,11 +288,11 @@ const struct{uint8_t report[HID_RPT01_SIZE];}hid_rpt01={
     {
 /* Data format:
  * |  7  |  6  |  5  |  4  |  3  |  2  |  1  |  0  |
- * | Tip |xxxxx| Contact Identifier                |
- * | X                                             |
- * |                                               |
- * | Y                                             |
- * |                                               |
+ * | Contact Identifier                |Range| Tip |
+ * | X L                                           |
+ * |   H                                           |
+ * | Y L                                           |
+ * |   H                                           |
  * ... 5 times
  * | Contact Count                                 |
  */
@@ -303,13 +303,14 @@ const struct{uint8_t report[HID_RPT01_SIZE];}hid_rpt01={
     0x09, 0x22,                    //   USAGE (Finger)
     0xa1, 0x02,                    //   COLLECTION (Logical)
     0x09, 0x42,                    //     USAGE (Tip Switch)
+    0x09, 0x32,                    //     USAGE (In Range)
     0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
     0x25, 0x01,                    //     LOGICAL_MAXIMUM (1)
     0x75, 0x01,                    //     REPORT_SIZE (1)
-    0x95, 0x01,                    //     REPORT_COUNT (1)
+    0x95, 0x02,                    //     REPORT_COUNT (2)
     0x81, 0x02,                    //     INPUT (Data,Var,Abs)
-    0x81, 0x03,                    //     INPUT (Cnst,Var,Abs)
     0x75, 0x06,                    //     REPORT_SIZE (6)
+    0x95, 0x01,                    //     REPORT_COUNT (1)
     0x25, 0x3f,                    //     LOGICAL_MAXIMUM (63)
     0x09, 0x51,                    //     USAGE (Contact Identifier)
     0x81, 0x02,                    //     INPUT (Data,Var,Abs)
@@ -332,13 +333,14 @@ const struct{uint8_t report[HID_RPT01_SIZE];}hid_rpt01={
     0x09, 0x22,                    //   USAGE (Finger)
     0xa1, 0x02,                    //   COLLECTION (Logical)
     0x09, 0x42,                    //     USAGE (Tip Switch)
+    0x09, 0x32,                    //     USAGE (In Range)
     0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
     0x25, 0x01,                    //     LOGICAL_MAXIMUM (1)
     0x75, 0x01,                    //     REPORT_SIZE (1)
-    0x95, 0x01,                    //     REPORT_COUNT (1)
+    0x95, 0x02,                    //     REPORT_COUNT (2)
     0x81, 0x02,                    //     INPUT (Data,Var,Abs)
-    0x81, 0x03,                    //     INPUT (Cnst,Var,Abs)
     0x75, 0x06,                    //     REPORT_SIZE (6)
+    0x95, 0x01,                    //     REPORT_COUNT (1)
     0x25, 0x3f,                    //     LOGICAL_MAXIMUM (63)
     0x09, 0x51,                    //     USAGE (Contact Identifier)
     0x81, 0x02,                    //     INPUT (Data,Var,Abs)
@@ -361,13 +363,14 @@ const struct{uint8_t report[HID_RPT01_SIZE];}hid_rpt01={
     0x09, 0x22,                    //   USAGE (Finger)
     0xa1, 0x02,                    //   COLLECTION (Logical)
     0x09, 0x42,                    //     USAGE (Tip Switch)
+    0x09, 0x32,                    //     USAGE (In Range)
     0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
     0x25, 0x01,                    //     LOGICAL_MAXIMUM (1)
     0x75, 0x01,                    //     REPORT_SIZE (1)
-    0x95, 0x01,                    //     REPORT_COUNT (1)
+    0x95, 0x02,                    //     REPORT_COUNT (2)
     0x81, 0x02,                    //     INPUT (Data,Var,Abs)
-    0x81, 0x03,                    //     INPUT (Cnst,Var,Abs)
     0x75, 0x06,                    //     REPORT_SIZE (6)
+    0x95, 0x01,                    //     REPORT_COUNT (1)
     0x25, 0x3f,                    //     LOGICAL_MAXIMUM (63)
     0x09, 0x51,                    //     USAGE (Contact Identifier)
     0x81, 0x02,                    //     INPUT (Data,Var,Abs)
@@ -390,13 +393,14 @@ const struct{uint8_t report[HID_RPT01_SIZE];}hid_rpt01={
     0x09, 0x22,                    //   USAGE (Finger)
     0xa1, 0x02,                    //   COLLECTION (Logical)
     0x09, 0x42,                    //     USAGE (Tip Switch)
+    0x09, 0x32,                    //     USAGE (In Range)
     0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
     0x25, 0x01,                    //     LOGICAL_MAXIMUM (1)
     0x75, 0x01,                    //     REPORT_SIZE (1)
-    0x95, 0x01,                    //     REPORT_COUNT (1)
+    0x95, 0x02,                    //     REPORT_COUNT (2)
     0x81, 0x02,                    //     INPUT (Data,Var,Abs)
-    0x81, 0x03,                    //     INPUT (Cnst,Var,Abs)
     0x75, 0x06,                    //     REPORT_SIZE (6)
+    0x95, 0x01,                    //     REPORT_COUNT (1)
     0x25, 0x3f,                    //     LOGICAL_MAXIMUM (63)
     0x09, 0x51,                    //     USAGE (Contact Identifier)
     0x81, 0x02,                    //     INPUT (Data,Var,Abs)
@@ -419,13 +423,14 @@ const struct{uint8_t report[HID_RPT01_SIZE];}hid_rpt01={
     0x09, 0x22,                    //   USAGE (Finger)
     0xa1, 0x02,                    //   COLLECTION (Logical)
     0x09, 0x42,                    //     USAGE (Tip Switch)
+    0x09, 0x32,                    //     USAGE (In Range)
     0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
     0x25, 0x01,                    //     LOGICAL_MAXIMUM (1)
     0x75, 0x01,                    //     REPORT_SIZE (1)
-    0x95, 0x01,                    //     REPORT_COUNT (1)
+    0x95, 0x02,                    //     REPORT_COUNT (2)
     0x81, 0x02,                    //     INPUT (Data,Var,Abs)
-    0x81, 0x03,                    //     INPUT (Cnst,Var,Abs)
     0x75, 0x06,                    //     REPORT_SIZE (6)
+    0x95, 0x01,                    //     REPORT_COUNT (1)
     0x25, 0x3f,                    //     LOGICAL_MAXIMUM (63)
     0x09, 0x51,                    //     USAGE (Contact Identifier)
     0x81, 0x02,                    //     INPUT (Data,Var,Abs)
