@@ -16,10 +16,8 @@
 
 void interrupt_init(void);
 
-int main()
+MAIN_RETURN main()
 {
-    SYSTEM_Initialize(SYSTEM_STATE_USB_START);
-
     USBDeviceInit();
     USBDeviceAttach();
 
@@ -29,6 +27,7 @@ int main()
     tp_enable();
 
     bl_enable();
+
     while(1)
     {
         /* If the USB device isn't configured yet, we can't really do anything
@@ -52,7 +51,6 @@ int main()
         APP_DeviceHIDDigitizerTasks();
     }//end while
 
-    return 0;
 }
 
 bool USER_USB_CALLBACK_EVENT_HANDLER(USB_EVENT event, void *pdata, uint16_t size)
@@ -100,6 +98,11 @@ bool USER_USB_CALLBACK_EVENT_HANDLER(USB_EVENT event, void *pdata, uint16_t size
 }
 
 void interrupt high_priority isr() {
+    if (UEIR) {
+            TRISCbits.RC4 = 0;
+            LATCbits.LATC4 = 1;
+
+    }
     // Check all USB interrupts
     USBDeviceTasks();
 }
